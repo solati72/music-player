@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پخش‌کننده عاشقانه</title>
+    <style>
+        /* ===== تنظیمات کلی با تم نارنجی ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #1a0f0a, #2d1a0f, #1a0f0a);
+            color: #fff;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        .player-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 35px 30px 30px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 120, 0, 0.15);
+            border: 1px solid rgba(255, 200, 150, 0.10);
+            text-align: center;
+            transition: all 0.4s ease;
+        }
+
+        /* ===== هدر با تصاویر شخصی ===== */
+        .custom-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .header-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255, 150, 50, 0.3);
+            box-shadow: 0 0 20px rgba(255, 120, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .header-image:hover {
+            transform: scale(1.08);
+        }
+
+        .romantic-title {
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #ffb088;
+            text-shadow: 0 0 20px rgba(255, 120, 0, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 150, 50, 0.15);
+            flex: 1;
+            text-align: center;
+        }
+
+        /* ===== کاور آهنگ ===== */
+        .cover-art {
+            width: 160px;
+            height: 160px;
+            margin: 10px auto 18px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff8a4a, #b3591a);
+            box-shadow: 0 0 40px rgba(255, 120, 0, 0.5), 0 0 80px rgba(255, 80, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.5s ease;
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            background-size: cover;
+            background-position: center;
+            cursor: pointer;
+        }
+        .cover-art.playing {
+            animation: spin 8s linear infinite;
+            box-shadow: 0 0 60px rgba(255, 120, 0, 0.7);
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== نام آهنگ و خواننده ===== */
+        .song-title {
+            font-size: 26px;
+            font-weight: 700;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #ffe0c6, #ffb088);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(255, 120, 0, 0.2);
+        }
+
+        .song-artist {
+            font-size: 15px;
+            color: #b08870;
+            margin-top: 4px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* ===== پلیر ===== */
+        .soundcloud-player {
+            margin: 25px 0 18px;
+            padding: 12px 0;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+        }
+
+        .time-display {
+            font-size: 13px;
+            color: #b08870;
+            font-weight: 300;
+            min-width: 40px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.10);
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+        }
+        .progress-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ff8a4a;
+            box-shadow: 0 0 16px rgba(255, 120, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .progress-bar::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+            background: #ff7a2a;
+        }
+        .progress-bar::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ff8a4a;
+            box-shadow: 0 0 16px rgba(255, 120, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .ctrl-btn {
+            background: none;
+            border: none;
+            color: #e0c0b0;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+        }
+        .ctrl-btn:hover {
+            color: #fff;
+            background: rgba(255, 120, 0, 0.15);
+            transform: scale(1.05);
+        }
+        .ctrl-btn.play-btn {
+            font-size: 42px;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(135deg, #ff8a4a, #d96a2a);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 120, 0, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.10);
+        }
+        .ctrl-btn.play-btn:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 45px rgba(255, 120, 0, 0.6);
+        }
+
+        /* ===== متن آهنگ ===== */
+        .lyrics-section {
+            margin: 18px 0 8px;
+            padding: 16px 14px;
+            background: rgba(0, 0, 0, 0.20);
+            border-radius: 20px;
+            max-height: 140px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            scrollbar-width: thin;
+            scrollbar-color: #ff8a4a transparent;
+        }
+        .lyrics-section::-webkit-scrollbar {
+            width: 4px;
+        }
+        .lyrics-section::-webkit-scrollbar-thumb {
+            background: #ff8a4a;
+            border-radius: 8px;
+        }
+
+        .lyrics-line {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #c8b0a0;
+            padding: 2px 6px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+        .lyrics-line.active {
+            color: #fff;
+            font-weight: 500;
+            background: rgba(255, 120, 0, 0.12);
+            border-right: 3px solid #ff8a4a;
+            padding-right: 14px;
+        }
+
+        /* ===== دیباگ ===== */
+        .debug-info {
+            margin-top: 14px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            font-size: 11px;
+            color: #887060;
+            word-break: break-all;
+            text-align: left;
+            direction: ltr;
+            max-height: 60px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        /* ===== ریسپانسیو ===== */
+        @media (max-width: 480px) {
+            .player-card { padding: 25px 18px; }
+            .cover-art { width: 120px; height: 120px; font-size: 48px; }
+            .song-title { font-size: 21px; }
+            .ctrl-btn.play-btn { width: 58px; height: 58px; font-size: 34px; }
+            .header-image { width: 40px; height: 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="player-card">
+
+    <!-- ===== هدر با تصاویر شخصی (آدرس تصاویر خود را جایگزین کنید) ===== -->
+    <div class="custom-header">
+        <img class="header-image" src="https://raw.githubusercontent.com/solati72/music-player/main/images/left-photo.png" alt="تصویر سمت چپ">
+        <span class="romantic-title">✨ به عشق تو</span>
+        <img class="header-image" src="https://raw.githubusercontent.com/solati72/music-player/main/images/right-photo.png" alt="تصویر سمت راست">
+    </div>
+
+    <!-- ===== کاور ===== -->
+    <div class="cover-art" id="coverArt">🎵</div>
+
+    <!-- ===== عنوان آهنگ ===== -->
+    <div class="song-title" id="songTitle">در حال بارگذاری...</div>
+    <div class="song-artist" id="songArtist">♥ برای عزیز دلم</div>
+
+    <!-- ===== پلیر ===== -->
+    <div class="soundcloud-player">
+        <div class="progress-container">
+            <span class="time-display" id="currentTime">0:00</span>
+            <input type="range" class="progress-bar" id="progressBar" value="0" min="0" step="0.01">
+            <span class="time-display" id="durationTime">0:00</span>
+        </div>
+
+        <div class="controls">
+            <button class="ctrl-btn" id="prevBtn" title="قبلی">⏮</button>
+            <button class="ctrl-btn play-btn" id="playBtn">▶</button>
+            <button class="ctrl-btn" id="nextBtn" title="بعدی">⏭</button>
+        </div>
+    </div>
+
+    <!-- ===== متن آهنگ ===== -->
+    <div class="lyrics-section" id="lyricsContainer">
+        <div class="lyrics-line" id="lyricsPlaceholder">💭 متن آهنگ در حال بارگذاری...</div>
+    </div>
+
+    <!-- ===== دیباگ ===== -->
+    <div class="debug-info" id="debugInfo">⏳ در حال اتصال...</div>
+</div>
+
+<script>
+    // ============================================================
+    //  تنظیمات – شناسه JSONBin جدید خود را اینجا قرار دهید
+    // ============================================================
+    const CONFIG_URL = 'https://api.jsonbin.io/v3/b/6a9ba3f5f5f4af5e296cb1d0';
+
+    // ============================================================
+    //  عناصر DOM
+    // ============================================================
+    const coverArt    = document.getElementById('coverArt');
+    const songTitle   = document.getElementById('songTitle');
+    const songArtist  = document.getElementById('songArtist');
+    const playBtn     = document.getElementById('playBtn');
+    const prevBtn     = document.getElementById('prevBtn');
+    const nextBtn     = document.getElementById('nextBtn');
+    const progressBar = document.getElementById('progressBar');
+    const currentTime = document.getElementById('currentTime');
+    const durationTime = document.getElementById('durationTime');
+    const lyricsContainer = document.getElementById('lyricsContainer');
+    const debugEl     = document.getElementById('debugInfo');
+
+    const audioEl = new Audio();
+    audioEl.controls = false;
+    audioEl.preload = 'auto';
+
+    let songList = [];
+    let currentSongIndex = 0;
+    let isPlaying = false;
+    let lyricsData = [];
+    let updateInterval = null;
+
+    // ============================================================
+    //  بارگذاری تنظیمات
+    // ============================================================
+    async function loadConfig() {
+        try {
+            debugEl.textContent = '📡 در حال دریافت تنظیمات...';
+            const resp = await fetch(CONFIG_URL);
+            if (!resp.ok) throw new Error('HTTP ' + resp.status);
+            const data = await resp.json();
+            const config = data.record;
+
+            const songsObj = config.songs || {};
+            songList = Object.keys(songsObj).map(key => ({
+                id: key,
+                name: songsObj[key].name || 'آهنگ بدون نام',
+                file: songsObj[key].file || '',
+                artist: songsObj[key].artist || '♥ برای عزیز دلم',
+                cover: songsObj[key].cover || '',
+                lyrics: songsObj[key].lyrics || []
+            }));
+
+            const activeId = config.active_song;
+            const foundIndex = songList.findIndex(s => s.id == activeId);
+            if (foundIndex !== -1) currentSongIndex = foundIndex;
+
+            debugEl.textContent = `✅ ${songList.length} آهنگ بارگذاری شد`;
+            loadSong(currentSongIndex);
+        } catch (err) {
+            debugEl.textContent = '❌ خطا: ' + err.message;
+            songTitle.textContent = 'خطا در بارگذاری';
+        }
+    }
+
+    function loadSong(index) {
+        const song = songList[index];
+        if (!song) return;
+
+        songTitle.textContent = song.name;
+        songArtist.textContent = song.artist || '♥ برای عزیز دلم';
+
+        if (song.cover) {
+            coverArt.style.backgroundImage = `url(${song.cover})`;
+            coverArt.textContent = '';
+        } else {
+            coverArt.style.backgroundImage = '';
+            coverArt.textContent = '🎵';
+        }
+
+        coverArt.classList.remove('playing');
+
+        audioEl.src = song.file;
+        audioEl.load();
+
+        lyricsData = song.lyrics || [];
+        renderLyrics(0);
+
+        isPlaying = false;
+        playBtn.textContent = '▶';
+        progressBar.value = 0;
+        currentTime.textContent = '0:00';
+        durationTime.textContent = '0:00';
+
+        debugEl.textContent = `🎵 بارگذاری: ${song.name}`;
+    }
+
+    function renderLyrics(currentTimeSec) {
+        if (!lyricsData || lyricsData.length === 0) {
+            lyricsContainer.innerHTML = `<div class="lyrics-line">💭 متن آهنگی برای این آهنگ ثبت نشده است...</div>`;
+            return;
+        }
+
+        let html = '';
+        let activeFound = false;
+        for (let i = 0; i < lyricsData.length; i++) {
+            const line = lyricsData[i];
+            const isActive = (currentTimeSec >= line.time && 
+                              (i === lyricsData.length - 1 || currentTimeSec < lyricsData[i+1].time));
+            if (isActive) activeFound = true;
+            html += `<div class="lyrics-line ${isActive ? 'active' : ''}">${line.text}</div>`;
+        }
+
+        if (!activeFound && lyricsData.length > 0) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            const firstLine = tempDiv.querySelector('.lyrics-line');
+            if (firstLine) firstLine.classList.add('active');
+            html = tempDiv.innerHTML;
+        }
+
+        lyricsContainer.innerHTML = html;
+
+        const activeEl = lyricsContainer.querySelector('.lyrics-line.active');
+        if (activeEl) {
+            activeEl.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+    }
+
+    function togglePlay() {
+        if (audioEl.src === '') return;
+
+        if (isPlaying) {
+            audioEl.pause();
+            playBtn.textContent = '▶';
+            coverArt.classList.remove('playing');
+            isPlaying = false;
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+        } else {
+            audioEl.play().then(() => {
+                isPlaying = true;
+                playBtn.textContent = '⏸';
+                coverArt.classList.add('playing');
+                startProgressUpdate();
+            }).catch(err => {
+                debugEl.textContent = '⚠️ پخش خودکار ممکن نیست: ' + err.message;
+                playBtn.textContent = '▶';
+            });
+        }
+    }
+
+    function startProgressUpdate() {
+        if (updateInterval) clearInterval(updateInterval);
+        updateInterval = setInterval(() => {
+            if (!audioEl.duration || isNaN(audioEl.duration)) return;
+            const percent = (audioEl.currentTime / audioEl.duration) * 100;
+            progressBar.value = percent;
+            currentTime.textContent = formatTime(audioEl.currentTime);
+            if (durationTime.textContent === '0:00' || durationTime.textContent === 'NaN:NaN') {
+                durationTime.textContent = formatTime(audioEl.duration);
+            }
+            renderLyrics(audioEl.currentTime);
+        }, 300);
+    }
+
+    function formatTime(seconds) {
+        if (!seconds || isNaN(seconds)) return '0:00';
+        const min = Math.floor(seconds / 60);
+        const sec = Math.floor(seconds % 60);
+        return `${min}:${sec.toString().padStart(2, '0')}`;
+    }
+
+    audioEl.addEventListener('loadedmetadata', () => {
+        durationTime.textContent = formatTime(audioEl.duration);
+        progressBar.max = 100;
+    });
+
+    audioEl.addEventListener('ended', () => {
+        isPlaying = false;
+        playBtn.textContent = '▶';
+        coverArt.classList.remove('playing');
+        progressBar.value = 0;
+        currentTime.textContent = '0:00';
+        if (updateInterval) {
+            clearInterval(updateInterval);
+            updateInterval = null;
+        }
+    });
+
+    audioEl.addEventListener('error', (e) => {
+        debugEl.textContent = '❌ خطا در پخش: ' + (audioEl.error ? audioEl.error.message : 'ناشناخته');
+        playBtn.textContent = '▶';
+        coverArt.classList.remove('playing');
+        isPlaying = false;
+    });
+
+    playBtn.addEventListener('click', togglePlay);
+
+    progressBar.addEventListener('input', (e) => {
+        if (!audioEl.duration) return;
+        const percent = parseFloat(e.target.value);
+        audioEl.currentTime = (percent / 100) * audioEl.duration;
+        currentTime.textContent = formatTime(audioEl.currentTime);
+    });
+
+    prevBtn.addEventListener('click', () => {
+        if (songList.length === 0) return;
+        currentSongIndex = (currentSongIndex - 1 + songList.length) % songList.length;
+        loadSong(currentSongIndex);
+        if (isPlaying) {
+            audioEl.play().catch(() => {});
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (songList.length === 0) return;
+        currentSongIndex = (currentSongIndex + 1) % songList.length;
+        loadSong(currentSongIndex);
+        if (isPlaying) {
+            audioEl.play().catch(() => {});
+        }
+    });
+
+    coverArt.addEventListener('click', togglePlay);
+
+    loadConfig();
+</script>
+</body>
+</html>
